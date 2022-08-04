@@ -3,6 +3,7 @@ using AutoMapper;
 using BarbarBot.Common.ModelsDto;
 using BarberBot.BusinessLogic.Interfaces;
 using BarberBot.Model.DataBaseContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace BarberBot.BusinessLogic.Services
 {
@@ -17,7 +18,7 @@ namespace BarberBot.BusinessLogic.Services
         }
         public IEnumerable<EmployeeDto> Get()
         {
-            var employee = _applicationContext.Employees.ToList();
+            var employee = _applicationContext.Employees.AsNoTracking().ToList();
             var employeeDto = _mapper.Map<List<EmployeeDto>>(employee);
             return employeeDto;
         }

@@ -26,21 +26,25 @@ var mappingConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfi
 IMapper mapper = mappingConfig.CreateMapper();
 
 var host = Host.CreateDefaultBuilder()
-    .ConfigureServices((context,services)=>
+    .ConfigureServices((context, services) =>
     {
         services.AddTransient<ICityService, CityService>();
+        services.AddTransient<IEmployeeService, EmployeeService>();
+        services.AddTransient<IAmenitiesService, AmenitiesService>();
         services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
         services.AddSingleton(mapper);
     })
     .UseSerilog()
     .Build();
-var svc = ActivatorUtilities.CreateInstance<CityService>(host.Services);
+var _cityService = ActivatorUtilities.CreateInstance<CityService>(host.Services);
+var _amenitiesService = ActivatorUtilities.CreateInstance<AmenitiesService>(host.Services);
+var _employeeService = ActivatorUtilities.CreateInstance<EmployeeService>(host.Services);
 
 static void BuildConfig(IConfigurationBuilder builder)
 {
     builder.SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsetings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIROMENT") ?? "Production"}.json", optional:true)
+        .AddJsonFile($"appsetings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIROMENT") ?? "Production"}.json", optional: true)
         .AddEnvironmentVariables();
 }
 
@@ -77,10 +81,6 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
 {
     if (message.Text == "/start")
     {
-        await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите команду: /command");
-    }
-    if (message.Text == "/command")
-    {
         ReplyKeyboardMarkup keyboard = new(new[]
         {
             new KeyboardButton[] { "Записаться"}
@@ -93,26 +93,41 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
     }
     if (message.Text == "Записаться")
     {
-        InlineKeyboardMarkup keyboard = new(new[]
+        foreach (var item in _cityService.Get())
         {
-            new[]{
-            InlineKeyboardButton.WithCallbackData("Кобрин", "Kobrin"),
+            InlineKeyboardMarkup keyboard = new(new[]
+        {
+            new[]
+            {
+            InlineKeyboardButton.WithCallbackData(item.Name, item.Name),
             }
         });
-        await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
+            await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
+        }
         return;
     }
-
-    await botClient.SendTextMessageAsync(message.Chat.Id, $"Вы написали:\n{message.Text}");
-
-
 }
 async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery)
 {
-
-    if (callbackQuery.Data.StartsWith("Kobrin"))
+    if (_cityService.Get().Any(x => callbackQuery.Data.StartsWith(x.Name)))
     {
-        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выбран город кобрин");
+        List<InlineKeyboardButton> listButton = new List<InlineKeyboardButton>();
+        foreach (var item in _employeeService.Get())
+        {
+            listButton.Add(InlineKeyboardButton.WithCallbackData(item.Name, item.Specialization));
+        }
+        InlineKeyboardMarkup keyboard = new(listButton.ToArray());
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Барбера:", replyMarkup: keyboard);
+    }
+    if(_employeeService.Get().Any(x=> callbackQuery.Data.StartsWith(x.Name)))
+    {
+        List<InlineKeyboardButton> listButton = new List<InlineKeyboardButton>();
+        foreach(var item in _amenitiesService.Get())
+        {
+            listButton.Add(InlineKeyboardButton.WithCallbackData(item.Title, item.Price.ToString()));
+        }
+        InlineKeyboardMarkup keyboard = new(listButton.ToArray());
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Услугу:", replyMarkup: keyboard);
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
