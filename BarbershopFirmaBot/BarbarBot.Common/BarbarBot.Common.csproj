@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BarberBot.BusinessLogic\BarberBot.BusinessLogic.csproj" />
+    <ProjectReference Include="..\BarberBot.Model\BarberBot.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ModelsDto\" />
+  </ItemGroup>
+
+</Project>
