@@ -10,10 +10,6 @@ namespace BarberBot.Model.DataBaseContext
         {
             Database.EnsureCreated();
         }
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer("Server = STASVCODE\\SQLEXPRESS; DataBase = BarbershopFirma; Trusted_Connection = True; TrustServerCertificate = True;");
-        //}
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Employee> Employees { get; set; } = null!;
         public DbSet<City> Cities { get; set; } = null!;

@@ -1,34 +1,50 @@
-﻿using Telegram.Bot;
+﻿using AutoMapper;
+using BarbarBot.Common.Mapper;
+using BarberBot.BusinessLogic.Interfaces;
+using BarberBot.BusinessLogic.Services;
+using BarberBot.Model.DataBaseContext;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using BarberBot.Model.DataBaseContext;
-using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
 
-//var serviceProvider = new ServiceCollection()
-//            .AddLogging()
-//            .AddSingleton<IFooService, FooService>()
-//            .AddSingleton<IBarService, BarService>()
-//            .BuildServiceProvider();
-var builder = new HostBuilder()
-               .ConfigureServices((hostContext, services) =>
-               {
+var builder = new ConfigurationBuilder();
+BuildConfig(builder);
+builder.SetBasePath(Directory.GetCurrentDirectory());
+builder.AddJsonFile("appsettings.json");
+var config = builder.Build();
+string connection = config.GetConnectionString("DefaultConnection");
 
-                   services.AddLogging(configure => configure.AddConsole())
-                   .AddDbContext<ApplicationContext>(options =>
-                   {
-                       options.UseSqlServer("Server=STASVCODE\\SQLEXPRESS;DataBase=BarbershopFirma;Trusted_Connection=True;TrustServerCertificate=True;");
-                   });
-               }).UseConsoleLifetime();
+var mappingConfig = new MapperConfiguration(mc => mc.AddProfile(new MappingProfile()));
+IMapper mapper = mappingConfig.CreateMapper();
 
-var host = builder.Build();
+var host = Host.CreateDefaultBuilder()
+    .ConfigureServices((context,services)=>
+    {
+        services.AddTransient<ICityService, CityService>();
+        services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
+        services.AddSingleton(mapper);
+    })
+    .UseSerilog()
+    .Build();
+var svc = ActivatorUtilities.CreateInstance<CityService>(host.Services);
 
+static void BuildConfig(IConfigurationBuilder builder)
+{
+    builder.SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsetings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIROMENT") ?? "Production"}.json", optional:true)
+        .AddEnvironmentVariables();
+}
 
+#region Bot
 var botClient = new TelegramBotClient("5406716149:AAF-2VzgKzw05pAfbLdDoNJDVS3qIXF8x2w");
 using var cts = new CancellationTokenSource();
 var receiverOptions = new ReceiverOptions
@@ -67,7 +83,7 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
     {
         ReplyKeyboardMarkup keyboard = new(new[]
         {
-            new KeyboardButton[] { "Записаться", "Отменить заказ" }
+            new KeyboardButton[] { "Записаться"}
         })
         {
             ResizeKeyboard = true
@@ -75,21 +91,15 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
         await botClient.SendTextMessageAsync(message.Chat.Id, "Выбрать:", replyMarkup: keyboard);
         return;
     }
-    if (message.Text == "Заказать такси")
+    if (message.Text == "Записаться")
     {
         InlineKeyboardMarkup keyboard = new(new[]
         {
             new[]{
-            InlineKeyboardButton.WithCallbackData("Эконом", "economy"),
-            InlineKeyboardButton.WithCallbackData("Комфорт", "сomfort"),
-            InlineKeyboardButton.WithCallbackData("Комфорт", "сomfort")
-            },
-             new[]{
-            InlineKeyboardButton.WithCallbackData("Детский", "kid"),
-            InlineKeyboardButton.WithCallbackData("БалышевЭкспрес", "business")
+            InlineKeyboardButton.WithCallbackData("Кобрин", "Kobrin"),
             }
         });
-        await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите категорию:", replyMarkup: keyboard);
+        await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
         return;
     }
 
@@ -100,10 +110,9 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
 async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery)
 {
 
-    if (callbackQuery.Data.StartsWith("economy"))
+    if (callbackQuery.Data.StartsWith("Kobrin"))
     {
-        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выбран эконом класс");
-
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выбран город кобрин");
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
@@ -117,4 +126,5 @@ Task HandleError(ITelegramBotClient client, Exception exception, CancellationTok
     Console.WriteLine(ErrorMessage);
     return Task.CompletedTask;
 }
+#endregion
 

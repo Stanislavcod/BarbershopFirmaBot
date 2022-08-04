@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BarbarBot.Common\BarbarBot.Common.csproj" />
     <ProjectReference Include="..\BarberBot.Model\BarberBot.Model.csproj" />
   </ItemGroup>
 
