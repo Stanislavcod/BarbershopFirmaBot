@@ -15,6 +15,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
+#region configurationBuider
 var builder = new ConfigurationBuilder();
 BuildConfig(builder);
 builder.SetBasePath(Directory.GetCurrentDirectory());
@@ -39,6 +40,7 @@ var host = Host.CreateDefaultBuilder()
 var _cityService = ActivatorUtilities.CreateInstance<CityService>(host.Services);
 var _amenitiesService = ActivatorUtilities.CreateInstance<AmenitiesService>(host.Services);
 var _employeeService = ActivatorUtilities.CreateInstance<EmployeeService>(host.Services);
+#endregion
 
 static void BuildConfig(IConfigurationBuilder builder)
 {
@@ -54,7 +56,7 @@ using var cts = new CancellationTokenSource();
 var receiverOptions = new ReceiverOptions
 {
     AllowedUpdates = { }
-};
+}; 
 botClient.StartReceiving(HandleUpdates, HandleError, receiverOptions, cancellationToken: cts.Token);
 
 var me = await botClient.GetMeAsync();
@@ -88,7 +90,7 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
         {
             ResizeKeyboard = true
         };
-        await botClient.SendTextMessageAsync(message.Chat.Id, "Выбрать:", replyMarkup: keyboard);
+        await botClient.SendTextMessageAsync(message.Chat.Id, "Чего желаете?:", replyMarkup: keyboard);
         return;
     }
     if (message.Text == "Записаться")
@@ -111,20 +113,20 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
 {
     if (_cityService.Get().Any(x => callbackQuery.Data.StartsWith(x.Name)))
     {
-        List<InlineKeyboardButton> listButton = new List<InlineKeyboardButton>();
+        List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
         foreach (var item in _employeeService.Get())
         {
-            listButton.Add(InlineKeyboardButton.WithCallbackData(item.Name, item.Specialization));
+            listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(item.Name) });
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Барбера:", replyMarkup: keyboard);
     }
     if(_employeeService.Get().Any(x=> callbackQuery.Data.StartsWith(x.Name)))
     {
-        List<InlineKeyboardButton> listButton = new List<InlineKeyboardButton>();
+        List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
         foreach(var item in _amenitiesService.Get())
         {
-            listButton.Add(InlineKeyboardButton.WithCallbackData(item.Title, item.Price.ToString()));
+            listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(item.Title, item.Price.ToString())});
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Услугу:", replyMarkup: keyboard);
