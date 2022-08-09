@@ -9,7 +9,7 @@ namespace BarberBot.Model.Models
         
         public int AmenitiesId { get; set; }
         public Amenities? Amenities { get; set; }
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public User? User { get; set; }
         public int EmployeeId { get; set; }
         public Employee? Employee { get; set; }

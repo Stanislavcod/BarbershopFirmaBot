@@ -8,6 +8,9 @@ namespace BarberBot.Model.Models
         public string Specialization { get; set; } = string.Empty;
         public string? Photo { get; set; } = string.Empty;
 
+        public int CityId { get; set; }
+        public City? City { get; set; }
+
         public List<Order> Orders = new();
         public List<Amenities> Amenities = new();
     }

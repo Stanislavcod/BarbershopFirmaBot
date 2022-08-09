@@ -7,5 +7,6 @@ namespace BarberBot.Model.Models
         public string Name { get; set; } = string.Empty;
 
         public List<User> Users { get; set; } = new();
+        public List<Employee> Employees { get; set; } = new();
     }
 }

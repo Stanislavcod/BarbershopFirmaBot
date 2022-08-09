@@ -95,17 +95,16 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
     }
     if (message.Text == "Записаться")
     {
+        List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
         foreach (var item in _cityService.Get())
         {
-            InlineKeyboardMarkup keyboard = new(new[]
-        {
-            new[]
+            if(item != null)
             {
-            InlineKeyboardButton.WithCallbackData(item.Name, item.Name),
+                listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(text: item.Name, callbackData: item.Name) });
             }
-        });
-            await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
         }
+        InlineKeyboardMarkup keyboard = new(listButton.ToArray());
+        await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
         return;
     }
 }
@@ -114,7 +113,7 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     if (_cityService.Get().Any(x => callbackQuery.Data.StartsWith(x.Name)))
     {
         List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
-        foreach (var item in _employeeService.Get())
+        foreach (var item in _employeeService.Get(callbackQuery.Data))
         {
             if (item != null)
             {
@@ -136,57 +135,64 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     }
     if(_amenitiesService.Get().Any(x=> callbackQuery.Data.StartsWith(x.Price.ToString())))
     {
-        InlineKeyboardMarkup keyboard = new(new[]
+        List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
+        for (int i = DateTime.UtcNow.Day,j = DateTime.UtcNow.Month; i < DateTime.UtcNow.Day + 7; i++)
         {
-            new []
-            {
-                InlineKeyboardButton.WithCallbackData(text:"1-5",callbackData:"1-5"),
-                InlineKeyboardButton.WithCallbackData(text:"6-10",callbackData:"6-10"),
-                InlineKeyboardButton.WithCallbackData(text:"11-15",callbackData:"11-15"),
-            }, new []
-            {
-                InlineKeyboardButton.WithCallbackData(text:"16-20",callbackData:"16-20"),
-                InlineKeyboardButton.WithCallbackData(text:"21-25",callbackData:"21-25"),
-                InlineKeyboardButton.WithCallbackData(text:"26-31",callbackData:"26-31"),
-            },
-        });
-        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id,"Выберите дату",replyMarkup: keyboard);
+            listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(text: i.ToString()+"."+ j.ToString(), callbackData: i.ToString()) });
+        }
+        InlineKeyboardMarkup keyboard = new(listButton.ToArray());
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Дату:", replyMarkup: keyboard);
+        //InlineKeyboardMarkup keyboard = new(new[]
+        //{
+        //    new []
+        //    {
+        //        InlineKeyboardButton.WithCallbackData(text:"1-5",callbackData:"1-5"),
+        //        InlineKeyboardButton.WithCallbackData(text:"6-10",callbackData:"6-10"),
+        //        InlineKeyboardButton.WithCallbackData(text:"11-15",callbackData:"11-15"),
+        //    }, new []
+        //    {
+        //        InlineKeyboardButton.WithCallbackData(text:"16-20",callbackData:"16-20"),
+        //        InlineKeyboardButton.WithCallbackData(text:"21-25",callbackData:"21-25"),
+        //        InlineKeyboardButton.WithCallbackData(text:"26-31",callbackData:"26-31"),
+        //    },
+        //});
+        //await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите дату", replyMarkup: keyboard);
     }
-    if (callbackQuery.Data.StartsWith("1-5"))
-    {
-        ChoiceDate(1, 5,botClient,callbackQuery);
-    }
-    if (callbackQuery.Data.StartsWith("6-10"))
-    {
-        ChoiceDate(6, 10, botClient, callbackQuery);
-    }
-    if (callbackQuery.Data.StartsWith("11-15"))
-    {
-        ChoiceDate(10, 16, botClient, callbackQuery);
-    }
-    if (callbackQuery.Data.StartsWith("16-20"))
-    {
-        ChoiceDate(16, 20, botClient, callbackQuery);
-    }
-    if (callbackQuery.Data.StartsWith("21-25"))
-    {
-        ChoiceDate(21, 25, botClient, callbackQuery);
-    }
-    if (callbackQuery.Data.StartsWith("26-31"))
-    {
-        ChoiceDate(26, 31, botClient, callbackQuery);
-    }
+    //if (callbackQuery.Data.StartsWith("1-5"))
+    //{
+    //    ChoiceDate(1, 5,botClient,callbackQuery);
+    //}
+    //if (callbackQuery.Data.StartsWith("6-10"))
+    //{
+    //    ChoiceDate(6, 10, botClient, callbackQuery);
+    //}
+    //if (callbackQuery.Data.StartsWith("11-15"))
+    //{
+    //    ChoiceDate(10, 16, botClient, callbackQuery);
+    //}
+    //if (callbackQuery.Data.StartsWith("16-20"))
+    //{
+    //    ChoiceDate(16, 20, botClient, callbackQuery);
+    //}
+    //if (callbackQuery.Data.StartsWith("21-25"))
+    //{
+    //    ChoiceDate(21, 25, botClient, callbackQuery);
+    //}
+    //if (callbackQuery.Data.StartsWith("26-31"))
+    //{
+    //    ChoiceDate(26, 31, botClient, callbackQuery);
+    //}
 }
-async Task ChoiceDate(int o, int b, ITelegramBotClient botClient, CallbackQuery callbackQuery)
-{
-    List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
-    for (int i = o; i <= b; i++)
-    {
-        listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(text: i.ToString(), callbackData: i.ToString()) });
-    }
-    InlineKeyboardMarkup keyboard = new(listButton.ToArray());
-    await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите число", replyMarkup: keyboard);
-}
+//async Task ChoiceDate(int o, int b, ITelegramBotClient botClient, CallbackQuery callbackQuery)
+//{
+//    List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
+//    for (int i = o; i <= b; i++)
+//    {
+//        listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(text: i.ToString(), callbackData: i.ToString()) });
+//    }
+//    InlineKeyboardMarkup keyboard = new(listButton.ToArray());
+//    await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите число", replyMarkup: keyboard);
+//}
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
 {
     var ErrorMessage = exception switch
