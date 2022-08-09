@@ -8,8 +8,6 @@ namespace BarberBot.Model.DataBaseContext
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options): base(options)
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
         }
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Employee> Employees { get; set; } = null!;

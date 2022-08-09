@@ -32,6 +32,8 @@ var host = Host.CreateDefaultBuilder()
         services.AddTransient<ICityService, CityService>();
         services.AddTransient<IEmployeeService, EmployeeService>();
         services.AddTransient<IAmenitiesService, AmenitiesService>();
+        services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IUserService, UserService>();
         services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
         services.AddSingleton(mapper);
     })
@@ -40,6 +42,8 @@ var host = Host.CreateDefaultBuilder()
 var _cityService = ActivatorUtilities.CreateInstance<CityService>(host.Services);
 var _amenitiesService = ActivatorUtilities.CreateInstance<AmenitiesService>(host.Services);
 var _employeeService = ActivatorUtilities.CreateInstance<EmployeeService>(host.Services);
+var _userService = ActivatorUtilities.CreateInstance<UserService>(host.Services);
+var _orderService = ActivatorUtilities.CreateInstance<OrderService>(host.Services);
 #endregion
 
 static void BuildConfig(IConfigurationBuilder builder)
@@ -136,7 +140,7 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     if(_amenitiesService.Get().Any(x=> callbackQuery.Data.StartsWith(x.Price.ToString())))
     {
         List<InlineKeyboardButton[]> listButton = new List<InlineKeyboardButton[]>();
-        for (int i = DateTime.UtcNow.Day,j = DateTime.UtcNow.Month; i < DateTime.UtcNow.Day + 7; i++)
+        for (int i = DateTime.UtcNow.Day,j = DateTime.UtcNow.Month; i < DateTime.UtcNow.AddDays(7).Day; i++)
         {
             listButton.Add(new[] { InlineKeyboardButton.WithCallbackData(text: i.ToString()+"."+ j.ToString(), callbackData: i.ToString()) });
         }

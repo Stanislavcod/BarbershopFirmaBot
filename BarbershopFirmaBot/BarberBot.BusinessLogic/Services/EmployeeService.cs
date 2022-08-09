@@ -3,9 +3,6 @@ using AutoMapper;
 using BarbarBot.Common.ModelsDto;
 using BarberBot.BusinessLogic.Interfaces;
 using BarberBot.Model.DataBaseContext;
-using BarberBot.Model.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace BarberBot.BusinessLogic.Services
 {
@@ -20,7 +17,7 @@ namespace BarberBot.BusinessLogic.Services
         }
         public IEnumerable<EmployeeDto> Get(string cityName)
         {
-            var employee = _applicationContext.Employees.ToList().Where(x=> x.City.Name == cityName);
+            var employee = _applicationContext.Employees.Where(x => x.City.Name == cityName).ToList();
             var employeeDto = _mapper.Map<List<EmployeeDto>>(employee);
             return employeeDto;
         }
@@ -30,7 +27,7 @@ namespace BarberBot.BusinessLogic.Services
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
             return employeeDto;
         }
-        public IEnumerable<EmployeeDto> Get()
+        public IEnumerable<EmployeeDto> Get()   
         {
             var employee = _applicationContext.Employees.ToList();
             var employeeDto = _mapper.Map<List<EmployeeDto>>(employee);
