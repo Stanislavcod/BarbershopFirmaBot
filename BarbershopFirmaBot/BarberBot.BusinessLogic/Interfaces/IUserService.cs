@@ -1,5 +1,4 @@
-﻿
-using BarbarBot.Common.ModelsDto;
+﻿using BarbarBot.Common.ModelsDto;
 
 namespace BarberBot.BusinessLogic.Interfaces
 {

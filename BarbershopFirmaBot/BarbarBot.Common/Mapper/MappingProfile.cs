@@ -16,6 +16,7 @@ namespace BarbarBot.Common.Mapper
             CreateMap<Amenities, AmenitiesDto>().ReverseMap();
             CreateMap<Employee, EmployeeDto>().ReverseMap();
             CreateMap<Order,OrderDto>().ReverseMap();
+            CreateMap<AmenitiesPrice,AmenitiesPriceDto>().ReverseMap();
         }
     }
 }
