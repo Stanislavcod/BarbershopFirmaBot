@@ -160,15 +160,19 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     }
     if (isGetTime)
     {
+        DateTime timeStart = new DateTime(0,0,0,10,00,00);
+        DateTime timeClose = new DateTime(0,0,0,20,45,00);
         List<List<InlineKeyboardButton>> listButton = new List<List<InlineKeyboardButton>>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new List<InlineKeyboardButton>();
-        for (double i = 10.15, j = 1; i <= 20.45; i += 00.15, j++)
+        int j = 0;
+        for (DateTime m = timeStart; m <= timeClose; m.AddMinutes(15))
         {
-            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: i.ToString(), callbackData: i.ToString()));
+            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: m.ToString(), callbackData: m.ToString()));
             if (j % 5 == 0)
             {
                 listButton.Add(inlineKeyboardButtons);
                 inlineKeyboardButtons = new List<InlineKeyboardButton>();
+                j++;
             }
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
