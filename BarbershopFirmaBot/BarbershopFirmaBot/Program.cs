@@ -64,6 +64,11 @@ var receiverOptions = new ReceiverOptions
     },
 };
 bool isGetTime = default;
+bool RegName = default;
+bool RegPhone = default;
+bool RegEmail = default;
+
+string UserName = default;
 botClient.StartReceiving(HandleUpdates, HandleError, receiverOptions, cancellationToken: cts.Token);
 
 var me = await botClient.GetMeAsync();
@@ -113,6 +118,14 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
         await botClient.SendTextMessageAsync(message.Chat.Id, "Выберите город:", replyMarkup: keyboard);
         return;
     }
+    if (RegName)
+    {
+        RegName = false;
+        UserName = message.Text;
+        await botClient.SendTextMessageAsync(message.Chat.Id, $"Ваше имя: {message.Text}");
+        RegPhone = true;
+        return;
+    }
 }
 async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery)
 {
@@ -156,12 +169,14 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Дату:", replyMarkup: keyboard);
-        isGetTime = true;
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Введите своё имя:");
+        RegName = true;
+        //isGetTime = true;
     }
     if (isGetTime)
     {
-        DateTime timeStart = new DateTime(0,0,0,10,00,00);
-        DateTime timeClose = new DateTime(0,0,0,20,45,00);
+        DateTime timeStart = new DateTime(0, 0, 0, 10, 00, 00);
+        DateTime timeClose = new DateTime(0, 0, 0, 20, 45, 00);
         List<List<InlineKeyboardButton>> listButton = new List<List<InlineKeyboardButton>>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new List<InlineKeyboardButton>();
         int j = 0;
@@ -177,6 +192,18 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Время:", replyMarkup: keyboard);
+    }
+    if(RegPhone)
+    {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+    {
+        KeyboardButton.WithRequestContact("Share Contact"),
+    });
+
+        Message sentMessage = await botClient.SendTextMessageAsync(
+            chatId: callbackQuery.Message.Chat.Id,
+            text: "Ваш номер телефона?",
+            replyMarkup: replyKeyboardMarkup);
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
