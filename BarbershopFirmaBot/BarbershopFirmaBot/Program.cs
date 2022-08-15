@@ -69,6 +69,9 @@ bool RegPhone = default;
 bool RegEmail = default;
 
 string UserName = default;
+string UserEmail = default;
+string DataReg = default;
+string UserPhone = default;
 botClient.StartReceiving(HandleUpdates, HandleError, receiverOptions, cancellationToken: cts.Token);
 
 var me = await botClient.GetMeAsync();
@@ -79,7 +82,7 @@ cts.Cancel();
 
 async Task HandleUpdates(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
-    if (update.Type == UpdateType.Message && update?.Message?.Text != null)
+    if (update.Type == UpdateType.Message && update?.Message != null)
     {
         await HandleMessage(botClient, update.Message);
         return;
@@ -90,6 +93,7 @@ async Task HandleUpdates(ITelegramBotClient botClient, Update update, Cancellati
         return;
     }
 }
+
 async Task HandleMessage(ITelegramBotClient botClient, Message message)
 {
     if (message.Text == "/start")
@@ -122,8 +126,35 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
     {
         RegName = false;
         UserName = message.Text;
-        await botClient.SendTextMessageAsync(message.Chat.Id, $"Ваше имя: {message.Text}");
         RegPhone = true;
+    }
+    if (RegPhone)
+    {
+        RegPhone = false;
+        ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+    {
+            KeyboardButton.WithRequestContact("Поделиться номером телефона"),
+        })
+        {
+            ResizeKeyboard = true
+        };
+
+       await botClient.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            text: "Ваш номер телефона?",
+            replyMarkup: replyKeyboardMarkup);
+        RegEmail = true;
+    }
+    if (RegEmail)
+    {
+        RegEmail = false;
+        UserEmail = message.Text;
+    }
+    if (message.Contact != null)
+    {
+        UserPhone = message.Contact.PhoneNumber;
+        await botClient.SendTextMessageAsync(message.Chat.Id, "Введите email:");
+        RegEmail = true;
         return;
     }
 }
@@ -160,7 +191,7 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         List<InlineKeyboardButton> inlineKeyboardButtons = new List<InlineKeyboardButton>();
         for (int i = DateTime.UtcNow.Day, j = 1; i <= day.Day; i++, j++)
         {
-            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: i.ToString(), callbackData: i.ToString()));
+            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: i.ToString(), callbackData: "day_" + i.ToString()));
             if (i == day.Day || j % 5 == 0)
             {
                 listButton.Add(inlineKeyboardButtons);
@@ -169,8 +200,6 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Дату:", replyMarkup: keyboard);
-        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Введите своё имя:");
-        RegName = true;
         //isGetTime = true;
     }
     if (isGetTime)
@@ -193,17 +222,12 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Время:", replyMarkup: keyboard);
     }
-    if(RegPhone)
+    if(callbackQuery.Data.StartsWith("day_"))
     {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
-    {
-        KeyboardButton.WithRequestContact("Share Contact"),
-    });
-
-        Message sentMessage = await botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message.Chat.Id,
-            text: "Ваш номер телефона?",
-            replyMarkup: replyKeyboardMarkup);
+        DataReg = callbackQuery.Data;
+        await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Введите имя:");
+        RegName = true;
+        return;
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
