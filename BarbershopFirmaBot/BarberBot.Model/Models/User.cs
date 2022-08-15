@@ -8,9 +8,9 @@ namespace BarberBot.Model.Models
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public List<Order> Order { get; set; } = new List<Order>();
-
-        public int CityId { get; set; }
+        public List<Order> Order { get; set; } = new();
+        
+        public int? CityId { get; set; }
         public City? City { get; set; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿
+using BarberBot.Model.Models;
+
 namespace BarbarBot.Common.ModelsDto
 {
     public class UserDto

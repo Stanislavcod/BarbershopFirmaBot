@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BarbarBot.Common.Mapper;
+using BarbarBot.Common.ModelsDto;
 using BarberBot.BusinessLogic.Interfaces;
 using BarberBot.BusinessLogic.Services;
 using BarberBot.Model.DataBaseContext;
@@ -67,11 +68,13 @@ bool isGetTime = default;
 bool RegName = default;
 bool RegPhone = default;
 bool RegEmail = default;
+bool isCreateUser = default;
 
 string UserName = default;
 string UserEmail = default;
 string DataReg = default;
 string UserPhone = default;
+
 botClient.StartReceiving(HandleUpdates, HandleError, receiverOptions, cancellationToken: cts.Token);
 
 var me = await botClient.GetMeAsync();
@@ -200,34 +203,39 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Дату:", replyMarkup: keyboard);
-        //isGetTime = true;
     }
-    if (isGetTime)
+    if (callbackQuery.Data.StartsWith("day_"))
     {
-        DateTime timeStart = new DateTime(0, 0, 0, 10, 00, 00);
-        DateTime timeClose = new DateTime(0, 0, 0, 20, 45, 00);
         List<List<InlineKeyboardButton>> listButton = new List<List<InlineKeyboardButton>>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new List<InlineKeyboardButton>();
-        int j = 0;
-        for (DateTime m = timeStart; m <= timeClose; m.AddMinutes(15))
+        for (int h = 10, m = 15, j = 1; h <= 21;m+=15, j++)
         {
-            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: m.ToString(), callbackData: m.ToString()));
+            if(m>=60)
+            {
+                h++;
+                m -= 60;
+            }
+            inlineKeyboardButtons.Add(InlineKeyboardButton.WithCallbackData(text: h.ToString() + ":" + m.ToString(), callbackData: "time_"+ h.ToString() + ":" + m.ToString()));
             if (j % 5 == 0)
             {
                 listButton.Add(inlineKeyboardButtons);
                 inlineKeyboardButtons = new List<InlineKeyboardButton>();
-                j++;
             }
         }
         InlineKeyboardMarkup keyboard = new(listButton.ToArray());
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Выберите Время:", replyMarkup: keyboard);
     }
-    if(callbackQuery.Data.StartsWith("day_"))
+    if (callbackQuery.Data.StartsWith("time_"))
     {
         DataReg = callbackQuery.Data;
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Введите имя:");
         RegName = true;
         return;
+    }
+    if (UserEmail != null && UserName != null && UserPhone !=null)
+    {
+        UserDto userDto = new UserDto { Email = UserEmail, Name = UserName, PhoneNumber = UserPhone};
+        _userService.Create(userDto);
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)
