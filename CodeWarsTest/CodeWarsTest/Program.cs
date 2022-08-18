@@ -1,27 +1,37 @@
 ﻿int[] nums = { 5, 10, 86, 656, 543, 8 };
-int[] newNums = FindSmaller(nums);
-for(int i = 0; i < newNums.Length; i++)
+Console.WriteLine(Sum(nums));
+
+int Sum(int[] arr, int n = 0)
 {
-    Console.WriteLine(newNums[i]);
+    if (n >= arr.Length)
+        return 0;
+    else
+        return 1 + Sum(arr,n+1);
 }
 
-int[] FindSmaller(int[] nums)
-{
-    int temp = 0;
-    for(int write = 0; write < nums.Length; write++)
-    {
-        for(int sort = 0; sort < nums.Length-1; sort++)
-        {
-            if (nums[sort]> nums[sort+1])
-            {
-                temp = nums[sort+1];
-                nums[sort+1] = nums[sort];
-                nums[sort] = temp;
-            }
-        }
-    }
-    return nums;
-}
+//int[] newNums = FindSmaller(nums);
+//for(int i = 0; i < newNums.Length; i++)
+//{
+//    Console.WriteLine(newNums[i]);
+//}
+
+//int[] FindSmaller(int[] nums)
+//{
+//    int temp = 0;
+//    for(int write = 0; write < nums.Length; write++)
+//    {
+//        for(int sort = 0; sort < nums.Length-1; sort++)
+//        {
+//            if (nums[sort]> nums[sort+1])
+//            {
+//                temp = nums[sort+1];
+//                nums[sort+1] = nums[sort];
+//                nums[sort] = temp;
+//            }
+//        }
+//    }
+//    return nums;
+//}
 //int[] num = { 1, 3, 5, 7, 9 };
 //Console.WriteLine(binarySearch(num, 9));
 //Console.WriteLine(binarySearch(num, -1));

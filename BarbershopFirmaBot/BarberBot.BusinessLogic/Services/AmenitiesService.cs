@@ -23,6 +23,12 @@ namespace BarberBot.BusinessLogic.Services
             var amenitiesDto = _mapper.Map<List<AmenitiesDto>>(amenities);
             return amenitiesDto;
         }
+        public AmenitiesDto Get(string name)
+        {
+            var amenities = _applicationContext.Amenities.FirstOrDefault(x => x.Title == name);
+            var amenitiesDto = _mapper.Map<AmenitiesDto>(amenities);
+            return amenitiesDto;
+        }
         public AmenitiesDto Get(int id)
         {
             var amenities = _applicationContext.Amenities.FirstOrDefault(x => x.Id == id);

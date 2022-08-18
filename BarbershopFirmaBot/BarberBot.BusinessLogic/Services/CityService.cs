@@ -22,6 +22,12 @@ namespace BarberBot.BusinessLogic.Services
             var cityDto = _mapper.Map<List<CityDto>>(city);
             return cityDto;
         }
+        public CityDto Get(string Name)
+        {
+            var city = _applicationContext.Cities.FirstOrDefault(x => x.Name == Name);
+            var cityDto = _mapper.Map<CityDto>(city);
+            return cityDto;
+        }
         public CityDto Get(int id)
         {
             var city = _applicationContext.Cities.FirstOrDefault(x => x.Id == id);

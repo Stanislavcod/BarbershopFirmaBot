@@ -14,5 +14,6 @@ namespace BarberBot.BusinessLogic.Interfaces
         EmployeeDto Get(int id, int cityId);
         IEnumerable<EmployeeDto> Get(string cityName);
         IEnumerable<EmployeeDto> Get();
+        EmployeeDto GetEmployee(string name);
     }
 }

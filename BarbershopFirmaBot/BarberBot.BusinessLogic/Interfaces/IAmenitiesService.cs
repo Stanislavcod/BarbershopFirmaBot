@@ -8,5 +8,6 @@ namespace BarberBot.BusinessLogic.Interfaces
     {
         AmenitiesDto Get(int id);
         IEnumerable<AmenitiesDto> Get();
+        AmenitiesDto Get(string name);
     }
 }

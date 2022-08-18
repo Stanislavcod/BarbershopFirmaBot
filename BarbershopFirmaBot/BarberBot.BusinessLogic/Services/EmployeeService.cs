@@ -33,5 +33,11 @@ namespace BarberBot.BusinessLogic.Services
             var employeeDto = _mapper.Map<List<EmployeeDto>>(employee);
             return employeeDto;
         }
+        public  EmployeeDto GetEmployee(string name)
+        {
+            var employee = _applicationContext.Employees.FirstOrDefault(x => x.Name == name);
+            var employeeDto = _mapper.Map<EmployeeDto>(employee);
+            return employeeDto;
+        }
     }
 }

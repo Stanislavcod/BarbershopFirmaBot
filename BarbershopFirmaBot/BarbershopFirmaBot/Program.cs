@@ -64,7 +64,6 @@ var receiverOptions = new ReceiverOptions
     {
     },
 };
-bool isGetTime = default;
 bool RegName = default;
 bool RegPhone = default;
 bool RegEmail = default;
@@ -74,6 +73,7 @@ string UserName = default;
 string UserEmail = default;
 string DataReg = default;
 string UserPhone = default;
+string TimeReg = default;
 
 botClient.StartReceiving(HandleUpdates, HandleError, receiverOptions, cancellationToken: cts.Token);
 
@@ -152,6 +152,8 @@ async Task HandleMessage(ITelegramBotClient botClient, Message message)
     {
         RegEmail = false;
         UserEmail = message.Text;
+        isCreateUser = true;
+        return;
     }
     if (message.Contact != null)
     {
@@ -206,6 +208,7 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     }
     if (callbackQuery.Data.StartsWith("day_"))
     {
+        DataReg = callbackQuery.Data.Substring(4);
         List<List<InlineKeyboardButton>> listButton = new List<List<InlineKeyboardButton>>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new List<InlineKeyboardButton>();
         for (int h = 10, m = 15, j = 1; h <= 21;m+=15, j++)
@@ -227,15 +230,23 @@ async Task HandleCallbackQuery(ITelegramBotClient botClient, CallbackQuery callb
     }
     if (callbackQuery.Data.StartsWith("time_"))
     {
-        DataReg = callbackQuery.Data;
+        TimeReg = callbackQuery.Data.Substring(5);
         await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "Введите имя:");
         RegName = true;
         return;
     }
-    if (UserEmail != null && UserName != null && UserPhone !=null)
+    if (isCreateUser)
     {
-        UserDto userDto = new UserDto { Email = UserEmail, Name = UserName, PhoneNumber = UserPhone};
+        UserDto userDto = new UserDto { Email = UserEmail, Name = UserName, PhoneNumber = UserPhone,
+            CityDto = _cityService.Get(callbackQuery.Data)};
         _userService.Create(userDto);
+        OrderDto order = new OrderDto
+        {
+            AmenitiesDto = _amenitiesService.Get(callbackQuery.Data),
+            EmployeeDto = (EmployeeDto)_employeeService.Get(callbackQuery.Data),
+            UserDto = _userService.Get(callbackQuery.Data),
+            DateOfRecording = DateTime.Parse(DataReg + TimeReg)
+        };
     }
 }
 Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellation)

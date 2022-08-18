@@ -6,5 +6,6 @@ namespace BarberBot.BusinessLogic.Interfaces
     {
         void Create(UserDto userDto);
         void Delete(int id);
+        UserDto Get(string name);
     }
 }

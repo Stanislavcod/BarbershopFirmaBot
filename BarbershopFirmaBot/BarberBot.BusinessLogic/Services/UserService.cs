@@ -29,5 +29,11 @@ namespace BarberBot.BusinessLogic.Services
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
+        public UserDto Get(string name)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Name == name);
+            var userDto = _mapper.Map<UserDto>(user);
+            return userDto;
+        }
     }
 }
