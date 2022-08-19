@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarbershopFirmaBot", "BarbershopFirmaBot\BarbershopFirmaBot.csproj", "{ADB936B7-EFEC-49CF-BF24-AB4DC5374627}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Bot", "1.Bot", "{4ABB50B3-289C-4107-A7A5-7337D9BD2746}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.BusinessLogic", "2.BusinessLogic", "{CDDA2497-297A-4545-81FB-42C34646529E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.Model", "3.Model", "{048BC075-14AC-4511-BAD8-F0FEE67AFFD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarberBot.Model", "BarberBot.Model\BarberBot.Model.csproj", "{3A9532C6-37DF-49B2-AFA1-6AF493FC074D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarberBot.BusinessLogic", "BarberBot.BusinessLogic\BarberBot.BusinessLogic.csproj", "{EB2E185F-09DF-4E2F-9A89-12CADE981965}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4.Common", "4.Common", "{3A34C8C4-8F9B-4812-A87C-3019DBC580C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarbarBot.Common", "BarbarBot.Common\BarbarBot.Common.csproj", "{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADB936B7-EFEC-49CF-BF24-AB4DC5374627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADB936B7-EFEC-49CF-BF24-AB4DC5374627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADB936B7-EFEC-49CF-BF24-AB4DC5374627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADB936B7-EFEC-49CF-BF24-AB4DC5374627}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A9532C6-37DF-49B2-AFA1-6AF493FC074D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A9532C6-37DF-49B2-AFA1-6AF493FC074D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A9532C6-37DF-49B2-AFA1-6AF493FC074D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A9532C6-37DF-49B2-AFA1-6AF493FC074D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB2E185F-09DF-4E2F-9A89-12CADE981965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB2E185F-09DF-4E2F-9A89-12CADE981965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB2E185F-09DF-4E2F-9A89-12CADE981965}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB2E185F-09DF-4E2F-9A89-12CADE981965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ADB936B7-EFEC-49CF-BF24-AB4DC5374627} = {4ABB50B3-289C-4107-A7A5-7337D9BD2746}
+		{3A9532C6-37DF-49B2-AFA1-6AF493FC074D} = {048BC075-14AC-4511-BAD8-F0FEE67AFFD8}
+		{EB2E185F-09DF-4E2F-9A89-12CADE981965} = {CDDA2497-297A-4545-81FB-42C34646529E}
+		{B13F694F-EBCC-42F3-BE6B-E3438D4CE1BF} = {3A34C8C4-8F9B-4812-A87C-3019DBC580C9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59C4AD9D-E2B9-4B68-BE9F-529B83FB6239}
+	EndGlobalSection
+EndGlobal
